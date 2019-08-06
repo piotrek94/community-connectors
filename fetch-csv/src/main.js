@@ -1,8 +1,8 @@
 function sendUserError(message) {
   var cc = DataStudioApp.createCommunityConnector();
   cc.newUserError()
-    .setText(message)
-    .throwException();
+      .setText(message)
+      .throwException();
 }
 
 function getAuthType() {
@@ -17,75 +17,75 @@ function getConfig(request) {
   connectorConfig.setDateRangeRequired(false);
 
   connectorConfig
-    .newTextInput()
-    .setId('url')
-    .setName('Enter the URL of your CSV');
+      .newTextInput()
+      .setId('url')
+      .setName('Enter the URL of your CSV');
 
   connectorConfig
-    .newSelectSingle()
-    .setId('delimiter')
-    .setName('Select the delimiter between each value')
-    .setAllowOverride(false)
-    .addOption(
-      connectorConfig
-        .newOptionBuilder()
-        .setLabel('Comma')
-        .setValue(',')
-    )
-    .addOption(
-      connectorConfig
-        .newOptionBuilder()
-        .setLabel('Semicolon')
-        .setValue(';')
-    )
-    .addOption(
-      connectorConfig
-        .newOptionBuilder()
-        .setLabel('Tabulation')
-        .setValue('\t')
-    );
+      .newSelectSingle()
+      .setId('delimiter')
+      .setName('Select the delimiter between each value')
+      .setAllowOverride(false)
+      .addOption(
+          connectorConfig
+              .newOptionBuilder()
+              .setLabel('Comma')
+              .setValue(',')
+      )
+      .addOption(
+          connectorConfig
+              .newOptionBuilder()
+              .setLabel('Semicolon')
+              .setValue(';')
+      )
+      .addOption(
+          connectorConfig
+              .newOptionBuilder()
+              .setLabel('Tabulation')
+              .setValue('\t')
+      );
 
   connectorConfig
-    .newSelectSingle()
-    .setId('textQualifier')
-    .setName('Are the values surrounded by single or double quotes?')
-    .setAllowOverride(false)
-    .addOption(
-      connectorConfig
-        .newOptionBuilder()
-        .setLabel('No Quotes')
-        .setValue('undefined')
-    )
-    .addOption(
-      connectorConfig
-        .newOptionBuilder()
-        .setLabel('Single Quotes')
-        .setValue("'")
-    )
-    .addOption(
-      connectorConfig
-        .newOptionBuilder()
-        .setLabel('Double Quotes')
-        .setValue('"')
-    );
+      .newSelectSingle()
+      .setId('textQualifier')
+      .setName('Are the values surrounded by single or double quotes?')
+      .setAllowOverride(false)
+      .addOption(
+          connectorConfig
+              .newOptionBuilder()
+              .setLabel('No Quotes')
+              .setValue('undefined')
+      )
+      .addOption(
+          connectorConfig
+              .newOptionBuilder()
+              .setLabel('Single Quotes')
+              .setValue("'")
+      )
+      .addOption(
+          connectorConfig
+              .newOptionBuilder()
+              .setLabel('Double Quotes')
+              .setValue('"')
+      );
 
   connectorConfig
-    .newSelectSingle()
-    .setId('containsHeader')
-    .setName('Does the CSV have a header row?')
-    .setAllowOverride(false)
-    .addOption(
-      connectorConfig
-        .newOptionBuilder()
-        .setLabel('True')
-        .setValue('true')
-    )
-    .addOption(
-      connectorConfig
-        .newOptionBuilder()
-        .setLabel('False')
-        .setValue('false')
-    );
+      .newSelectSingle()
+      .setId('containsHeader')
+      .setName('Does the CSV have a header row?')
+      .setAllowOverride(false)
+      .addOption(
+          connectorConfig
+              .newOptionBuilder()
+              .setLabel('True')
+              .setValue('true')
+      )
+      .addOption(
+          connectorConfig
+              .newOptionBuilder()
+              .setLabel('False')
+              .setValue('false')
+      );
 
   return connectorConfig.build();
 }
@@ -137,8 +137,8 @@ function getFields(request, content) {
   var valueSeparator = request.configParams.delimiter;
   if (textQualifier !== 'undefined') {
     firstLineContent = firstLineContent.substring(
-      1,
-      firstLineContent.length - 1
+        1,
+        firstLineContent.length - 1
     );
     valueSeparator = textQualifier + valueSeparator + textQualifier;
   }
@@ -172,20 +172,19 @@ function getData(request) {
     return field.name;
   });
   var fields = getFields(request, content);
-  var requestedFields = fields.forIds(requestedFieldIds);
   var buildedFields = fields.build();
 
   var requestedFieldsIndex = buildedFields.reduce(function(
-    filtered,
-    field,
-    index
-  ) {
-    if (requestedFieldIds.indexOf(field.name) >= 0) {
-      filtered.push(index);
-    }
-    return filtered;
-  },
-  []);
+      filtered,
+      field,
+      index
+      ) {
+        if (requestedFieldIds.indexOf(field.name) >= 0) {
+          filtered.push(index);
+        }
+        return filtered;
+      },
+      []);
 
   var textQualifier = request.configParams.textQualifier;
   var delimiter = request.configParams.delimiter;
@@ -204,39 +203,53 @@ function getData(request) {
   }
 
   var rows = contentRows
-    .filter(function(contentRow) {
-      // Remove rows that are empty.
-      return contentRow.trim() !== '';
-    })
-    .map(function(contentRow, idx) {
-      if (textQualifier !== 'undefined') {
-        contentRow = contentRow.substring(1, contentRow.length - 1);
-      }
-      var allValues = contentRow.split(valueSeparator);
-      if (buildedFields.length !== allValues.length) {
-        sendUserError(
-          'Error parsing content. Row: ' +
-            idx +
-            ' has ' +
-            allValues.length +
-            ' field(s), but ' +
-            buildedFields.length +
-            ' field(s) were expected.'
-        );
-      }
-      var requestedValues = allValues.filter(function(value, index) {
-        return requestedFieldsIndex.indexOf(index) >= 0;
+      .filter(function(contentRow) {
+        // Remove rows that are empty.
+        return contentRow.trim() !== '';
+      })
+      .map(function(contentRow, idx) {
+        if (textQualifier !== 'undefined') {
+          contentRow = contentRow.substring(1, contentRow.length - 1);
+        }
+        var allValues = contentRow.split(valueSeparator);
+        if (buildedFields.length !== allValues.length) {
+          sendUserError(
+              'Error parsing content. Row: ' +
+              idx +
+              ' has ' +
+              allValues.length +
+              ' field(s), but ' +
+              buildedFields.length +
+              ' field(s) were expected.'
+          );
+        }
+        var requestedValues = allValues.filter(function(value, index) {
+          return requestedFieldsIndex.indexOf(index) >= 0;
+        });
+        return {values: requestedValues};
       });
-      return {values: requestedValues};
-    });
   if (containsHeader === 'true') {
     rows = rows.slice(1);
   }
 
   var result = {
-    schema: requestedFields.build(),
+    schema: fixInvalidOrder(requestedFieldIds, buildedFields),
     rows: rows
   };
 
   return result;
+}
+
+/**
+ * @param {String[]} fieldsIdsFromRequest Array of requested fields ids.
+ * @param {Object[]} fieldsInOrderFromCsvFile fields.build() return value.
+ * @returns {Object[]}.
+ */
+function fixInvalidOrder(
+    fieldsIdsFromRequest,
+    fieldsInOrderFromCsvFile
+) {
+  return fieldsInOrderFromCsvFile.filter(function (fieldFromCsvFile) {
+    return fieldsIdsFromRequest.indexOf(fieldFromCsvFile.name) >= 0;
+  });
 }
